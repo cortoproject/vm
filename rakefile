@@ -1,0 +1,5 @@
+PACKAGE = 'corto/vm'
+
+CFLAGS = ["-Wunused-parameter", "-Wno-gnu-label-as-value", "-Wno-unknown-pragmas"]
+
+require "#{ENV['CORTO_BUILD']}/package"
