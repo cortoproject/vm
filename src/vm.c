@@ -124,7 +124,7 @@ typedef struct corto_stringConcatCache {
 #define INIT(type, code)\
     INIT_##code: {\
         fetchOp2(INIT, code)\
-        corto_value v = corto_value_value((corto_type)op2_##code, &op1_##code);\
+        corto_value v = corto_value_value(&op1_##code, (corto_type)op2_##code);\
         corto_initv(&v);\
         next();\
     }
@@ -132,7 +132,7 @@ typedef struct corto_stringConcatCache {
 #define DEINIT(type, code)\
     DEINIT_##code: {\
         fetchOp2(DEINIT, code)\
-        corto_value v = corto_value_value((corto_type)op2_##code, &op1_##code);\
+        corto_value v = corto_value_value(&op1_##code, (corto_type)op2_##code);\
         corto_deinitv(&v);\
         next();\
     }
@@ -483,7 +483,7 @@ typedef union Di2f_t {
         if (fromType->reference) {\
             fromType = (corto_type)corto_word_o;\
         }\
-        corto_convert((corto_primitive)fromType, &op2_##code, (corto_primitive)stage2_W, &op1_##code);\
+        corto_ptr_cast((corto_primitive)fromType, &op2_##code, (corto_primitive)stage2_W, &op1_##code);\
         next();\
     }
 

@@ -123,13 +123,5 @@ vm_op *vm_programAddOp(vm_program program, uint32_t line);
 /* Enter code that requires types here */
 /* $end */
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
-#ifdef __cplusplus
-}
-#endif
-
 #endif
 
