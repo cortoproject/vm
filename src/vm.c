@@ -87,7 +87,7 @@ typedef struct corto_stringConcatCache {
 #define SETREF(type, code)\
     SETREF_##code:{\
         fetchOp2(SETREF,code);\
-        corto_setref((corto_object*)&op1_##code, (corto_object)op2_##code);\
+        corto_ptr_setref((corto_object*)&op1_##code, (corto_object)op2_##code);\
     }\
     next();
 
@@ -678,27 +678,27 @@ typedef union Di2f_t {
 #define ELEML(type,code)\
     ELEML_##code:\
         fetchOp2(ELEML, code);\
-        CHECK_BOUNDS(corto_llSize(*(corto_ll*)op1_##code), op2_##code)\
-        op1_##code = (W_t)corto_llGet(*(corto_ll*)op1_##code, op2_##code);\
+        CHECK_BOUNDS(corto_ll_size(*(corto_ll*)op1_##code), op2_##code)\
+        op1_##code = (W_t)corto_ll_get(*(corto_ll*)op1_##code, op2_##code);\
         next();
 
 #define ELEMLX(type,code)\
     ELEMLX_##code:\
         fetchOp2(ELEMLX, code);\
-        CHECK_BOUNDS(corto_llSize(*(corto_ll*)op1_##code), op2_##code)\
-        op1_##code = (W_t)corto_llGetPtr(*(corto_ll*)op1_##code, op2_##code);\
+        CHECK_BOUNDS(corto_ll_size(*(corto_ll*)op1_##code), op2_##code)\
+        op1_##code = (W_t)corto_ll_getPtr(*(corto_ll*)op1_##code, op2_##code);\
         next();\
 
 #define ELEMM(type,code)\
     ELEMM_##code:\
         fetchOp2(ELEMM, code);\
-        op1_##code = (W_t)corto_rbtreeGet(*(corto_rbtree*)op1_##code, (void*)&op2_##code);\
+        op1_##code = (W_t)corto_rb_get(*(corto_rbtree*)op1_##code, (void*)&op2_##code);\
         next();\
 
 #define ELEMMX(type,code)\
     ELEMMX_##code:\
         fetchOp2(ELEMMX, code);\
-        op1_##code = (W_t)corto_rbtreeGetPtr(*(corto_rbtree*)op1_##code, (void*)&op2_##code);\
+        op1_##code = (W_t)corto_rb_getPtr(*(corto_rbtree*)op1_##code, (void*)&op2_##code);\
         next();\
 
 #define ITER_SET(type,code)\
