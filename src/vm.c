@@ -592,7 +592,7 @@ typedef union Di2f_t {
             corto_error("Exception: null dereference in updateBegin");\
             goto STOP;\
         }\
-        if (corto_updateBegin((corto_object)op1_##code)) {\
+        if (corto_update_begin((corto_object)op1_##code)) {\
             corto_error("Exception: %s", corto_lasterr());\
             goto error;\
         }\
@@ -605,7 +605,7 @@ typedef union Di2f_t {
             corto_error("Exception: null dereference in updateEnd");\
             goto STOP;\
         }\
-        corto_updateEnd((corto_object)op1_##code);\
+        corto_update_end((corto_object)op1_##code);\
         next();\
 
 #define UPDATEFROM(type,code)\
@@ -632,7 +632,7 @@ typedef union Di2f_t {
         }\
         {\
             corto_object prev = corto_setOwner((corto_object)op2_##code);\
-            corto_updateEnd((corto_object)op1_##code);\
+            corto_update_end((corto_object)op1_##code);\
             corto_setOwner(prev);\
         }\
         next();\
@@ -645,7 +645,7 @@ typedef union Di2f_t {
             abort();\
             goto STOP;\
         }\
-        corto_updateCancel((corto_object)op1_##code);\
+        corto_update_cancel((corto_object)op1_##code);\
         next();\
 
 #ifdef CORTO_VM_BOUNDSCHECK
