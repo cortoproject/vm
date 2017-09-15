@@ -1,0 +1,10 @@
+{
+    "id": "corto/vm",
+    "type": "package",
+    "value": {
+        "author": "Sander Mertens",
+        "version": "1.0.0",
+        "description": "Corto virtual machine",
+        "cflags": ["-Wunused-parameter", "-Wno-gnu-label-as-value", "-Wno-unknown-pragmas"]        
+    }
+}
