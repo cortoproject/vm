@@ -8,9 +8,7 @@
 #define CORTO_VM_H
 
 #include <corto/corto.h>
-#include <corto/vm/_project.h>
 
-/* $header() */
 #include "stdint.h"
 #include "corto/vm/vm_def.h"
 #include "corto/vm/vm_expansion.h"
@@ -116,11 +114,5 @@ void vm_programFree(vm_program program);
 
 /* Add instruction to an existing program */
 vm_op *vm_programAddOp(vm_program program, uint32_t line);
-
-/* $end */
-
-/* $body() */
-/* Enter code that requires types here */
-/* $end */
 
 #endif
