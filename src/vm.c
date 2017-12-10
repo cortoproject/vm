@@ -20,8 +20,8 @@
 
 #include "signal.h"
 
-static corto_threadKey corto_stringConcatCacheKey;
-static corto_threadKey corto_currentProgramKey;
+static corto_tls corto_stringConcatCacheKey;
+static corto_tls corto_currentProgramKey;
 typedef struct corto_vm_context corto_vm_context;
 
 int CORTO_PROCEDURE_VM;
@@ -678,27 +678,27 @@ typedef union Di2f_t {
 #define ELEML(type,code)\
     ELEML_##code:\
         fetchOp2(ELEML, code);\
-        CHECK_BOUNDS(corto_ll_size(*(corto_ll*)op1_##code), op2_##code)\
+        CHECK_BOUNDS(corto_ll_count(*(corto_ll*)op1_##code), op2_##code)\
         op1_##code = (W_t)corto_ll_get(*(corto_ll*)op1_##code, op2_##code);\
         next();
 
 #define ELEMLX(type,code)\
     ELEMLX_##code:\
         fetchOp2(ELEMLX, code);\
-        CHECK_BOUNDS(corto_ll_size(*(corto_ll*)op1_##code), op2_##code)\
+        CHECK_BOUNDS(corto_ll_count(*(corto_ll*)op1_##code), op2_##code)\
         op1_##code = (W_t)corto_ll_getPtr(*(corto_ll*)op1_##code, op2_##code);\
         next();\
 
 #define ELEMM(type,code)\
     ELEMM_##code:\
         fetchOp2(ELEMM, code);\
-        op1_##code = (W_t)corto_rb_get(*(corto_rbtree*)op1_##code, (void*)&op2_##code);\
+        op1_##code = (W_t)corto_rb_find(*(corto_rb*)op1_##code, (void*)&op2_##code);\
         next();\
 
 #define ELEMMX(type,code)\
     ELEMMX_##code:\
         fetchOp2(ELEMMX, code);\
-        op1_##code = (W_t)corto_rb_getPtr(*(corto_rbtree*)op1_##code, (void*)&op2_##code);\
+        op1_##code = (W_t)corto_rb_findPtr(*(corto_rb*)op1_##code, (void*)&op2_##code);\
         next();\
 
 #define ITER_SET(type,code)\
@@ -860,7 +860,7 @@ static void corto_vm_sig(int sig) {
         signal(i, corto_vm_sigHardAbort);
     }
 
-    corto_currentProgramData *programData = corto_threadTlsGet(corto_currentProgramKey);
+    corto_currentProgramData *programData = corto_tls_get(corto_currentProgramKey);
 
     if ((sig == SIGSEGV) || (sig == SIGBUS)) {
         printf("Access violation (%d)\n", sig);
@@ -914,13 +914,13 @@ static void corto_vm_sig(int sig) {
 static void corto_vm_pushCurrentProgram(vm_program program, corto_vm_context *c) {
     corto_currentProgramData *data = NULL;
     if (!corto_currentProgramKey) {
-        corto_threadTlsKey(&corto_currentProgramKey, NULL);
+        corto_tls_new(&corto_currentProgramKey, NULL);
     }
-    data = corto_threadTlsGet(corto_currentProgramKey);
+    data = corto_tls_get(corto_currentProgramKey);
     if (!data) {
         data = corto_alloc(sizeof(corto_currentProgramData));
         data->sp = 0;
-        corto_threadTlsSet(corto_currentProgramKey, data);
+        corto_tls_set(corto_currentProgramKey, data);
     }
     data->stack[data->sp] = program;
     data->c[data->sp] = c;
@@ -929,7 +929,7 @@ static void corto_vm_pushCurrentProgram(vm_program program, corto_vm_context *c)
 
 /* Pop a program from the exception stack */
 static void corto_vm_popCurrentProgram(void) {
-    corto_currentProgramData *data = corto_threadTlsGet(corto_currentProgramKey);
+    corto_currentProgramData *data = corto_tls_get(corto_currentProgramKey);
     data->sp--;
 }
 
@@ -995,7 +995,7 @@ static void corto_vm_popSignalHandler(void) {
 
 static int32_t corto_vm_run_w_storage(vm_program program, void* reg, void *result) {
     corto_vm_context c;
-    c.strcache = corto_threadTlsGet(corto_stringConcatCacheKey);
+    c.strcache = corto_tls_get(corto_stringConcatCacheKey);
     int exception = 0;
 
     /* The signal handler will catch any exceptions and report when (and where)
@@ -1052,14 +1052,14 @@ static void corto_stringConcatCacheClean(void *data) {
 static void corto_stringConcatCacheCreate(void) {
     corto_stringConcatCache *concatCache;
     if (!corto_stringConcatCacheKey) {
-        corto_threadTlsKey(&corto_stringConcatCacheKey, corto_stringConcatCacheClean);
+        corto_tls_new(&corto_stringConcatCacheKey, corto_stringConcatCacheClean);
     }
 
-    concatCache = corto_threadTlsGet(corto_stringConcatCacheKey);
+    concatCache = corto_tls_get(corto_stringConcatCacheKey);
     if (!concatCache) {
         concatCache = corto_alloc(sizeof(corto_stringConcatCache));
         memset(concatCache, 0, sizeof(corto_stringConcatCache));
-        corto_threadTlsSet(corto_stringConcatCacheKey, concatCache);
+        corto_tls_set(corto_stringConcatCacheKey, concatCache);
     }
 }
 
@@ -1261,7 +1261,7 @@ void vm_deinitFunction(corto_function this) {
 }
 /* $end */
 
-int vmMain(int argc, char *argv[]) {
+int cortomain(int argc, char *argv[]) {
 /* $begin(main) */
     CORTO_UNUSED(argc);
     CORTO_UNUSED(argv);

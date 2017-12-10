@@ -9,7 +9,6 @@
 
 #include <corto/corto.h>
 #include <corto/vm/_project.h>
-#include <corto/c/c.h>
 
 /* $header() */
 #include "stdint.h"
@@ -125,4 +124,3 @@ vm_op *vm_programAddOp(vm_program program, uint32_t line);
 /* $end */
 
 #endif
-

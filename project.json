@@ -3,8 +3,11 @@
     "type": "package",
     "value": {
         "author": "Sander Mertens",
-        "version": "1.0.0",
+        "organization": "cortoproject",
+        "repository": "https://github.com/cortoproject/vm",
+        "license": "MIT",        
         "description": "Corto virtual machine",
-        "cflags": ["-Wunused-parameter", "-Wno-gnu-label-as-value", "-Wno-unknown-pragmas"]        
+        "managed": false,
+        "use": ["corto"]
     }
 }
