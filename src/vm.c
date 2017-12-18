@@ -15,7 +15,6 @@
 
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wunused-label"
-#pragma GCC diagnostic ignored "-pedantic"
 #pragma GCC diagnostic ignored "-Wstrict-aliasing"
 
 #include "signal.h"
