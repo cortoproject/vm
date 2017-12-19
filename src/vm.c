@@ -533,7 +533,7 @@ typedef union Di2f_t {
 #define NEW(type,code)\
     NEW_##code:\
         fetchOp2(NEW,code);\
-        op1_##code = (corto_word)corto_declare((corto_object)op2_##code);\
+        op1_##code = (corto_word)corto_declare(NULL, NULL, (corto_object)op2_##code);\
         next();\
 
 #define DEALLOC(type,code)\
@@ -615,9 +615,9 @@ typedef union Di2f_t {
             goto STOP;\
         }\
         {\
-            corto_object prev = corto_setOwner((corto_object)op2_##code);\
+            corto_object prev = corto_set_source((corto_object)op2_##code);\
             corto_update((corto_object)op1_##code);\
-            corto_setOwner(prev);\
+            corto_set_source(prev);\
         }\
         next();\
 
@@ -630,9 +630,9 @@ typedef union Di2f_t {
             goto STOP;\
         }\
         {\
-            corto_object prev = corto_setOwner((corto_object)op2_##code);\
+            corto_object prev = corto_set_source((corto_object)op2_##code);\
             corto_update_end((corto_object)op1_##code);\
-            corto_setOwner(prev);\
+            corto_set_source(prev);\
         }\
         next();\
 
