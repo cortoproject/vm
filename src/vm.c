@@ -410,7 +410,7 @@ typedef union Di2f_t {
     CALL_##code:\
         fetchOp1(CALL,code);\
         fetchHi();\
-        corto_callb((corto_function)c.hi.w, &op1_##code, c.stack);\
+        corto_invokeb((corto_function)c.hi.w, &op1_##code, c.stack);\
         c.sp = c.stack; /* Reset stack pointer */\
         next();\
 
@@ -425,7 +425,7 @@ typedef union Di2f_t {
 #define CALLVOID()\
     CALLVOID:\
         fetchHi();\
-        corto_callb((corto_function)c.hi.w, NULL, c.stack);\
+        corto_invokeb((corto_function)c.hi.w, NULL, c.stack);\
         c.sp = c.stack; /* Reset stack pointer */\
         next();\
 
@@ -444,7 +444,7 @@ typedef union Di2f_t {
         if (!ptr->instance) {\
             stackptr = CORTO_OFFSET(stackptr, sizeof(corto_word));\
         }\
-        corto_callb((corto_function)ptr->procedure, &op1_##code, stackptr);\
+        corto_invokeb((corto_function)ptr->procedure, &op1_##code, stackptr);\
         c.sp = c.stack; /* Reset stack pointer */ \
         next();\
     }\
@@ -1264,7 +1264,7 @@ int cortomain(int argc, char *argv[]) {
 /* $begin(main) */
     CORTO_UNUSED(argc);
     CORTO_UNUSED(argv);
-    CORTO_PROCEDURE_VM = corto_callRegister(vm_initFunction, vm_deinitFunction);
+    CORTO_PROCEDURE_VM = corto_invoke_register(vm_initFunction, vm_deinitFunction);
     return 0;
 /* $end */
 }
