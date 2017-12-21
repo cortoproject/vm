@@ -86,7 +86,7 @@ typedef struct corto_stringConcatCache {
 #define SETREF(type, code)\
     SETREF_##code:{\
         fetchOp2(SETREF,code);\
-        corto_ptr_setref((corto_object*)&op1_##code, (corto_object)op2_##code);\
+        corto_set_ref((corto_object*)&op1_##code, (corto_object)op2_##code);\
     }\
     next();
 
@@ -123,16 +123,14 @@ typedef struct corto_stringConcatCache {
 #define INIT(type, code)\
     INIT_##code: {\
         fetchOp2(INIT, code)\
-        corto_value v = corto_value_value(&op1_##code, (corto_type)op2_##code);\
-        corto_value_init(&v);\
+        corto_ptr_init(&op1_##code, (corto_type)op2_##code);\
         next();\
     }
 
 #define DEINIT(type, code)\
     DEINIT_##code: {\
         fetchOp2(DEINIT, code)\
-        corto_value v = corto_value_value(&op1_##code, (corto_type)op2_##code);\
-        corto_value_deinit(&v);\
+        corto_ptr_deinit(&op1_##code, (corto_type)op2_##code);\
         next();\
     }
 
