@@ -86,7 +86,7 @@ typedef struct corto_stringConcatCache {
 #define SETREF(type, code)\
     SETREF_##code:{\
         fetchOp2(SETREF,code);\
-        corto_ptr_setref((corto_object*)&op1_##code, (corto_object)op2_##code);\
+        corto_set_ref((corto_object*)&op1_##code, (corto_object)op2_##code);\
     }\
     next();
 
@@ -123,16 +123,14 @@ typedef struct corto_stringConcatCache {
 #define INIT(type, code)\
     INIT_##code: {\
         fetchOp2(INIT, code)\
-        corto_value v = corto_value_value(&op1_##code, (corto_type)op2_##code);\
-        corto_value_init(&v);\
+        corto_ptr_init(&op1_##code, (corto_type)op2_##code);\
         next();\
     }
 
 #define DEINIT(type, code)\
     DEINIT_##code: {\
         fetchOp2(DEINIT, code)\
-        corto_value v = corto_value_value(&op1_##code, (corto_type)op2_##code);\
-        corto_value_deinit(&v);\
+        corto_ptr_deinit(&op1_##code, (corto_type)op2_##code);\
         next();\
     }
 
@@ -410,7 +408,7 @@ typedef union Di2f_t {
     CALL_##code:\
         fetchOp1(CALL,code);\
         fetchHi();\
-        corto_callb((corto_function)c.hi.w, &op1_##code, c.stack);\
+        corto_invokeb((corto_function)c.hi.w, &op1_##code, c.stack);\
         c.sp = c.stack; /* Reset stack pointer */\
         next();\
 
@@ -425,7 +423,7 @@ typedef union Di2f_t {
 #define CALLVOID()\
     CALLVOID:\
         fetchHi();\
-        corto_callb((corto_function)c.hi.w, NULL, c.stack);\
+        corto_invokeb((corto_function)c.hi.w, NULL, c.stack);\
         c.sp = c.stack; /* Reset stack pointer */\
         next();\
 
@@ -444,7 +442,7 @@ typedef union Di2f_t {
         if (!ptr->instance) {\
             stackptr = CORTO_OFFSET(stackptr, sizeof(corto_word));\
         }\
-        corto_callb((corto_function)ptr->procedure, &op1_##code, stackptr);\
+        corto_invokeb((corto_function)ptr->procedure, &op1_##code, stackptr);\
         c.sp = c.stack; /* Reset stack pointer */ \
         next();\
     }\
@@ -533,7 +531,7 @@ typedef union Di2f_t {
 #define NEW(type,code)\
     NEW_##code:\
         fetchOp2(NEW,code);\
-        op1_##code = (corto_word)corto_declare((corto_object)op2_##code);\
+        op1_##code = (corto_word)corto_declare(NULL, NULL, (corto_object)op2_##code);\
         next();\
 
 #define DEALLOC(type,code)\
@@ -615,9 +613,9 @@ typedef union Di2f_t {
             goto STOP;\
         }\
         {\
-            corto_object prev = corto_setOwner((corto_object)op2_##code);\
+            corto_object prev = corto_set_source((corto_object)op2_##code);\
             corto_update((corto_object)op1_##code);\
-            corto_setOwner(prev);\
+            corto_set_source(prev);\
         }\
         next();\
 
@@ -630,9 +628,9 @@ typedef union Di2f_t {
             goto STOP;\
         }\
         {\
-            corto_object prev = corto_setOwner((corto_object)op2_##code);\
+            corto_object prev = corto_set_source((corto_object)op2_##code);\
             corto_update_end((corto_object)op1_##code);\
-            corto_setOwner(prev);\
+            corto_set_source(prev);\
         }\
         next();\
 
@@ -1264,7 +1262,7 @@ int cortomain(int argc, char *argv[]) {
 /* $begin(main) */
     CORTO_UNUSED(argc);
     CORTO_UNUSED(argv);
-    CORTO_PROCEDURE_VM = corto_callRegister(vm_initFunction, vm_deinitFunction);
+    CORTO_PROCEDURE_VM = corto_invoke_register(vm_initFunction, vm_deinitFunction);
     return 0;
 /* $end */
 }
